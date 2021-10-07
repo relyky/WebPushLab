@@ -1,0 +1,34 @@
+﻿@page "/pushmsg"
+
+<h3>推送訊息</h3>
+<p>Push FCM Message</p>
+
+<EditForm Model="data" OnValidSubmit="HandleValidSubmit">
+    <h4>Push Message</h4>
+    <div class="mb-3">
+        <label class="form-label">title</label>
+        <InputText class="form-control" @bind-Value="data.title" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">body</label>
+        <InputTextArea class="form-control" @bind-Value="data.body" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">url</label>
+        <InputText class="form-control" @bind-Value="data.url" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">imageUrl</label>
+        <InputText class="form-control" @bind-Value="data.imageUrl" />
+    </div>
+    <button type="submit">送出</button>
+</EditForm>
+
+@if (f_Loading)
+{
+    <div class="linear-indeterminate-box">
+        <div class="linear-indeterminate-primary"></div>
+    </div>
+}
+
+<p>@result</p>

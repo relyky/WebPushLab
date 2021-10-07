@@ -1,0 +1,102 @@
+﻿@page "/subsman"
+
+<h3>訂閱管理</h3>
+<ol>
+    <li>列出所有使用者訂閱資料。</li>
+    <li>刪除不良訂閱用戶(未實作)。</li>
+</ol>
+
+<button class="btn btn-primary" @onclick="HandleGetSubscriptionList">
+    刷新線上訂閱清單
+</button>
+<button class="btn btn-outline-primary" @onclick="HandleLoad">
+    讀檔
+</button>
+<button class="btn btn-outline-primary" @onclick="HandleSave">
+    存檔(LocalStorage)
+</button>
+
+@if (f_Loading)
+{
+    <div class="linear-indeterminate-box">
+        <div class="linear-indeterminate-primary"></div>
+    </div>
+}
+
+<p>
+    subsList.Count: @subsList.Count
+</p>
+
+@foreach (var c in subsList)
+{
+<pre style="max-width:70vw; overflow:auto;">@c.ToJson()</pre>
+}
+
+@code{
+    [Inject] ProtectedLocalStorage localStorage { get; init; }
+    [Inject] Data.SubscriptionStoreService subsStore { get; init; }
+
+    #region State
+    List<UserSubscriptionInfo> subsList = new();
+    bool f_Loading = false;
+    #endregion
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await HandleGetSubscriptionList();
+    }
+
+    async Task HandleGetSubscriptionList()
+    {
+        try
+        {
+            f_Loading = true;
+            await Task.Delay(500); // 跑太快了拉長一點時間
+
+            subsList = subsStore.GetSubscriptionAll();
+        }
+        finally
+        {
+            f_Loading = false;
+        }
+    }
+
+    async Task HandleSave()
+    {
+        try
+        {
+            f_Loading = true;
+            await Task.Delay(500); // 跑太快了拉長一點時間
+
+            var rawData = subsStore.GetRawData();
+            await localStorage.SetAsync("WebPush", "UserSubs", rawData);
+        }
+        finally
+        {
+            f_Loading = false;
+        }
+    }
+
+    async Task HandleLoad()
+    {
+        try
+        {
+            f_Loading = true;
+            await Task.Delay(500); // 跑太快了拉長一點時間
+
+            Dictionary<string, UserSubscriptionInfo> subsRepo = null;
+            var res = await localStorage.GetAsync<Dictionary<string, UserSubscriptionInfo>>("WebPush", "UserSubs");
+            if (res.Success) subsRepo = res.Value;
+            if (subsRepo == null) subsRepo = new();
+            subsStore.FillRawData(subsRepo);
+
+            // invoke => refresh UI
+            await HandleGetSubscriptionList();
+        }
+        finally
+        {
+            f_Loading = false;
+        }
+    }
+}

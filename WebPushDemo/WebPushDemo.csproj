@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Pages\PushMessage\NewFolder\**" />
+    <Content Remove="Pages\PushMessage\NewFolder\**" />
+    <EmbeddedResource Remove="Pages\PushMessage\NewFolder\**" />
+    <None Remove="Pages\PushMessage\NewFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WebPush" Version="1.0.12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\lib\bootstrap-icons\font\fonts\" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,165 @@
+﻿@page "/usersubs"
+
+<h3>訂閱訊息</h3>
+<p>用戶訂閱訊息</p>
+<p>support Push: @isBrowserSupportPush</p>
+
+<EditForm Model="userSubs">
+    <h4>訂閱</h4>
+    <div class="mb-3">
+        <label class="form-label">userCode</label>
+        <InputText class="form-control" @bind-Value="userSubs.userCode" />
+    </div>
+
+    <button class="btn btn-primary" @onclick="HandleSubscribe">
+        訂閱
+    </button>
+
+    <button class="btn btn-warning" @onclick="HandleUnsubscribe">
+        取消訂閱
+    </button>
+
+    <button class="btn btn-outline-secondary" @onclick="HandleGetSubscription">
+        取得訂閱
+    </button>
+
+</EditForm>
+
+@if (f_Loading)
+{
+    <div class="linear-indeterminate-box">
+        <div class="linear-indeterminate-primary"></div>
+    </div>
+}
+
+<p>result: @result</p>
+
+<h4>User Subscription Info</h4>
+<pre style="max-width:70vw; overflow:auto;">@userSubs.ToJson()</pre>
+
+@code{
+    [Inject] IConfiguration Configuration { get; init; }
+    [Inject] IJSRuntime jsr { get; init; }
+    [Inject] Data.SubscriptionStoreService subsStore { get; init; }
+
+    #region Resource
+    IJSObjectReference module;
+    bool f_Loading = false;
+    #endregion
+
+    #region State
+    bool isBrowserSupportPush = false;
+    UserSubscriptionInfo userSubs = new()
+    {
+        userCode = "smart",
+        subscription = null
+    };
+    string result = null;
+    #endregion
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            try
+            {
+                f_Loading = true;
+                StateHasChanged();
+                await Task.Delay(500); // 跑太快了拉長一點時間
+
+                // 動態載入 JS module
+                module = await jsr.InvokeAsync<IJSObjectReference>("import", "/js/sw_tool.js");
+                isBrowserSupportPush = await module.InvokeAsync<bool>("isSupportPush");
+
+                // invoke action: 取得訂閱，檢查是否有訂閱了。
+                var subs = await module.InvokeAsync<UserSubscriptionInfo.PushSubscription>("getUserSubscription");
+                userSubs.subscription = subs;
+                result = "getUserSubscription SUCCESS";
+                //StateHasChanged();
+            }
+            finally
+            {
+                f_Loading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    async Task HandleSubscribe()
+    {
+        try
+        {
+            f_Loading = true;
+            await Task.Delay(500); // 跑太快了拉長一點時間
+
+            string vapidPublicKey = Configuration["VapidKeys:PublicKey"];
+            var subs = await module.InvokeAsync<UserSubscriptionInfo.PushSubscription>("subscribeUser", vapidPublicKey);
+            userSubs.subscription = subs;
+            subsStore.UpdateSubscription(userSubs);
+            result = "subscribeUser SUCCESS";
+        }
+        catch (Exception ex)
+        {
+            result = $"[Exception:{ex.GetType().Name}] {ex.Message}";
+        }
+        finally
+        {
+            f_Loading = false;
+        }
+    }
+
+    async Task HandleUnsubscribe()
+    {
+        try
+        {
+            f_Loading = true;
+            await Task.Delay(500); // 跑太快了拉長一點時間
+
+            var success = await module.InvokeAsync<bool>("unsubscribeUser");
+            if (!success)
+            {
+                result = "unsubscribeUser ERROR";
+                return;
+            }
+
+            // GO
+            userSubs.subscription = null;
+            subsStore.UpdateSubscription(userSubs);
+            result = "unsubscribeUser SUCCESS";
+        }
+        catch (Exception ex)
+        {
+            result = $"[Exception:{ex.GetType().Name}] {ex.Message}";
+        }
+        finally
+        {
+            f_Loading = false;
+        }
+    }
+
+    /// <summary>
+    /// 取得訂閱
+    /// </summary>
+    async Task HandleGetSubscription()
+    {
+        try
+        {
+            f_Loading = true;
+            await Task.Delay(500); // 跑太快了拉長一點時間
+
+            var subs = await module.InvokeAsync<UserSubscriptionInfo.PushSubscription>("getUserSubscription");
+            userSubs.subscription = subs;
+            result = "getUserSubscription SUCCESS";
+        }
+        catch (Exception ex)
+        {
+            result = $"[Exception:{ex.GetType().Name}] {ex.Message}";
+        }
+        finally
+        {
+            f_Loading = false;
+        }
+    }
+
+}
