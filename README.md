@@ -15,6 +15,8 @@ Web Push Server practices with Blazor Server App.
  3. storeUserSubscription：管理 UserSubscription 的部份由應用模組自行管理，其中前一步驟拿到的`PushSubscription`並沒有與用戶關聯起來，這個關聯要自已處理並自已保存。
 * 實作上第二階段就可以透過FCM來推送訊息給用戶。當`sw.js`收到訊息時再利用[Notification](https://developer.mozilla.org/zh-TW/docs/Web/API/notification)通知到用戶。
 
+> 於行動平台`Andriod`與`iOS`對WebPush的支援不完整。若要在`Andriod`與`iOS`使用FCM以可以支援WebPush的應用，FCB官方有分別為`Andriod`與`iOS`提供native SDK的支援。[在 Android 上設置 Firebase Cloud Messaging 客戶端應用](https://firebase.google.com/docs/cloud-messaging/android/client?hl=zh-tw)、[在 iOS 上設置 Firebase Cloud Messaging 客戶端應用](https://firebase.google.com/docs/cloud-messaging/ios/client?hl=zh-tw)。
+
 # Architure Diagram
 ![Web Push Server Architecture](https://github.com/relyky/WebPushLab/blob/main/doc/Web%20Push%20Server%20Architecture.svg)
 
