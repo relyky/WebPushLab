@@ -44,7 +44,6 @@
 
     #region Resource
     IJSObjectReference module;
-    bool f_Loading = false;
     #endregion
 
     #region State
@@ -55,6 +54,7 @@
         subscription = null
     };
     string result = null;
+    bool f_Loading = false;
     #endregion
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

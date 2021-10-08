@@ -23,7 +23,11 @@ function urlB64ToUint8Array(base64String) {
 
 /// return Boolean
 export function isSupportPush() {
-  return ('serviceWorker' in navigator && 'PushManager' in window)
+  return ('serviceWorker' in navigator && 'PushManager' in window);
+}
+
+export function isSupportNotify() {
+  return ('Notification' in window);
 }
 
 /// return PushSubscription
@@ -114,3 +118,32 @@ export async function unsubscribeUser() {
     throw err;
   }
 }
+
+/// 送出通知訊息
+/// return string
+export async function SendNotification() {
+  // 首先讓我們確定瀏覽器支援 Notification
+  if (!("Notification" in window)) {
+    alert("這個瀏覽器不支援 Notification");
+  }
+
+  // 再檢查使用者是否已經授權執行 Notification
+  else if (Notification.permission === "granted") {
+    // 如果已經授權就可以直接新增 Notification 了!
+    var notification = new Notification("安安你好!");
+  }
+
+  // 否則，我們會需要詢問使用者是否開放權限
+  else if (Notification.permission !== 'denied') {
+    Notification.requestPermission(function (permission) {
+      // 如果使用者同意了就來新增一個 Notification 打聲招呼吧
+      if (permission === "granted") {
+        var notification = new Notification("安安~");
+      }
+    });
+  }
+
+  // 如果使用者還是不同意授權執行 Notification
+  // 最好還是進行適當的處理以避免繼續打擾使用者
+}
+

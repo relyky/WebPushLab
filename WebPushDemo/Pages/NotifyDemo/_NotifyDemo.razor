@@ -1,0 +1,78 @@
+﻿@page "/notifydemo"
+
+<h3>Notification Demo:2</h3>
+<dl>
+    <dt>isSupportPush</dt>
+    <dd>@isSupportPush</dd>
+    <dt>isSupportNotify</dt>
+    <dd>@isSupportNotify</dd>
+</dl>
+<hr/>
+<button class="btn btn-primary" @onclick="HandleNotify">通知自己</button>
+
+<p>@result</p>
+
+@code{
+    [Inject] IJSRuntime jsr { get; init; }
+
+    #region Resource
+    IJSObjectReference module;
+    #endregion
+
+    #region State
+    string isSupportPush = null;
+    string isSupportNotify = null;
+    string result = null;
+    bool f_Loading = false;
+    #endregion
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            try
+            {
+                f_Loading = true;
+                StateHasChanged();
+                await Task.Delay(500); // 跑太快了拉長一點時間
+
+                // 動態載入 JS module
+                module = await jsr.InvokeAsync<IJSObjectReference>("import", "/js/sw_tool.js");
+
+                // 檢查環境
+                bool f_isSupportPush = await module.InvokeAsync<bool>("isSupportPush");
+                isSupportPush = f_isSupportPush.ToString();
+                bool f_isSupportNotify = await module.InvokeAsync<bool>("isSupportNotify");
+                isSupportNotify = f_isSupportNotify.ToString();
+            }
+            finally
+            {
+                f_Loading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    async Task HandleNotify()
+    {
+        try
+        {
+            f_Loading = true;
+            StateHasChanged();
+            await Task.Delay(500); // 跑太快了拉長一點時間
+
+            await module.InvokeVoidAsync("SendNotification");
+            result = "SUCCESS";
+        }
+        catch (Exception ex)
+        {
+            result = ex.ToString();        
+        }
+        finally
+        {
+            f_Loading = false;
+            StateHasChanged();
+        }
+    }
+}
