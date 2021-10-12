@@ -38,5 +38,5 @@ Web Push Server practices with Blazor Server App.
 不成熟的原因之二是FCM WebPush機制運作起來其實是三方的整合，FCM, Web Push Server, Web Push Client，更正確來是說三方的配合尤其是client端，這三方的WebPush相關指令並非一套所以說成熟度不足。   
 再來是FCM尚未收費未來也不能保證持續免費，免費這件事本身就不合理不合成本，所以不成熟也可以理解，所以FCM更像是一種“公關或廣告”手段。  
 不成熟的原因之三是，Web Push並非標準也不是協定連共同規範都算不上，實際上以現在來說Web Push可以說等同FCM。   
-結論的結論，FCM WebPush是可以用的若有跨平台的WebPush需求，若只是單一系統內的Web Push機制其實用long polling這類老手段依然是很好的解，更好一點就是採用SignalR同類的工具來實現都比用FCM實作Web Push在安全性與成熟度都更好。   
+結論的結論，FCM WebPush是可以用的若有跨平台的WebPush需求(大概是社交類的應用)。若只是單一系統內的Web Push機制其實用long polling這類老手段依然是很好的解，更好一點就是採用SignalR同類的工具來實現都比用FCM實作Web Push在安全性與成熟度都更好。   
 > ※ 推測大概也是安全性的關係，所以在行動平台上(iOS,Android)的FCM現在也只提供native app的支援。
