@@ -2,10 +2,8 @@
 
 <h3>Notification Demo:2</h3>
 <dl>
-    <dt>isSupportPush</dt>
-    <dd>@isSupportPush</dd>
-    <dt>isSupportNotify</dt>
-    <dd>@isSupportNotify</dd>
+    <dt>supportInfo</dt>
+    <dd>@supportInfo.ToJson()</dd>
 </dl>
 <hr/>
 <button class="btn btn-primary" @onclick="HandleNotify">通知自己</button>
@@ -20,8 +18,7 @@
     #endregion
 
     #region State
-    string isSupportPush = null;
-    string isSupportNotify = null;
+    object supportInfo = null;
     string result = null;
     bool f_Loading = false;
     #endregion
@@ -41,10 +38,7 @@
                 module = await jsr.InvokeAsync<IJSObjectReference>("import", "/js/sw_tool.js");
 
                 // 檢查環境
-                bool f_isSupportPush = await module.InvokeAsync<bool>("isSupportPush");
-                isSupportPush = f_isSupportPush.ToString();
-                bool f_isSupportNotify = await module.InvokeAsync<bool>("isSupportNotify");
-                isSupportNotify = f_isSupportNotify.ToString();
+                supportInfo = await module.InvokeAsync<object>("checkSupport");
             }
             finally
             {

@@ -26,8 +26,18 @@ export function isSupportPush() {
   return ('serviceWorker' in navigator && 'PushManager' in window);
 }
 
+/// return Boolean
 export function isSupportNotify() {
   return ('Notification' in window);
+}
+
+/// return Object
+export function checkSupport() {
+  return {
+    serviceWorker: ('serviceWorker' in navigator),
+    PushManager: ('PushManager' in window),
+    Notification: ('Notification' in window)
+  }
 }
 
 /// return PushSubscription
