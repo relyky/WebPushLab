@@ -23,6 +23,10 @@
         訂閱狀態
     </button>
 
+    <button class="btn btn-primary" @onclick="HandleBackgroundSync">
+        Defer to send messages
+    </button>
+
 </EditForm>
 
 @if (f_Loading)
@@ -162,4 +166,24 @@
         }
     }
 
+    async Task HandleBackgroundSync()
+    {
+        /// ref→[Background Synchronization API](https://developer.mozilla.org/en-US/docs/Web/API/Background_Synchronization_API#background_synchronization_concepts_and_usage)
+        try
+        {
+            f_Loading = true;
+            await Task.Delay(500); // 跑太快了拉長一點時間
+
+            await module.InvokeVoidAsync("syncMessagesLater");
+            result = "syncMessagesLater SUCCESS";
+        }
+        catch (Exception ex)
+        {
+            result = $"[Exception:{ex.GetType().Name}] {ex.Message}";
+        }
+        finally
+        {
+            f_Loading = false;
+        }
+    }
 }

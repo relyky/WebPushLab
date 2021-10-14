@@ -2,7 +2,7 @@
  * JavaScript module:ES6+  
  */
 
-const SW_JS_PATH = '/js/sw.js'
+const SW_JS_PATH = '/sw.js'
 //const applicationServerPublicKey = 'BJZ8ttN_7Vn2c4hJZ9FILZKnyKkCZxgPxnTYsZ4sWjEciRm7inZcC-4Dguq-6afpCiK6dwtZHWMgNvTbpWoklQc';
 
 /// ref→ https://github.com/GoogleChromeLabs/web-push-codelab/blob/master/app/scripts/main.js
@@ -75,7 +75,7 @@ export async function subscribeUser(vapidPublicKey) {
       swRegistration = swReg;
     }
     else {
-      // 若已未註冊則註冊
+      // 若未註冊則註冊
       const swReg = await navigator.serviceWorker.register(SW_JS_PATH);
       console.log('subscribeUser => swRegistration.register', swReg);
       swRegistration = swReg;
@@ -157,3 +157,19 @@ export async function SendNotification() {
   // 最好還是進行適當的處理以避免繼續打擾使用者
 }
 
+/// 再註冊 Background Synchronization
+export async function syncMessagesLater() {
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    console.log('serviceWorker is ready.');
+
+    /// SyncManager.register([options]).then(function(syncRegistration) { ... })
+    /// https://developer.mozilla.org/en-US/docs/Web/API/SyncManager/register
+    await registration.sync.register('sync-messages');
+
+    console.log('sync[sync-messages] is registered');
+  } catch (err) {
+    console.log('Background Sync could not be registered!', err);
+    throw err;
+  }
+}
