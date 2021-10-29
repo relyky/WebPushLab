@@ -17,7 +17,7 @@ Web Push Server practices with Blazor Server App.
 
 > 於行動平台`Andriod`與`iOS`對WebPush的支援不完整。若要在`Andriod`與`iOS`使用FCM以可以支援WebPush的應用，官方有分別為`Andriod`與`iOS`提供native SDK的支援。[在 Android 上設置 Firebase Cloud Messaging 客戶端應用](https://firebase.google.com/docs/cloud-messaging/android/client?hl=zh-tw)、[在 iOS 上設置 Firebase Cloud Messaging 客戶端應用](https://firebase.google.com/docs/cloud-messaging/ios/client?hl=zh-tw)。
 
-# Architure Diagram
+# Architecture Diagram
 ![Web Push Server Architecture](https://github.com/relyky/WebPushLab/blob/main/doc/Web%20Push%20Server%20Architecture.svg)
 
 # Appendix
